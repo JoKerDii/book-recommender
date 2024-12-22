@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Book Recommender</title>
+        <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chgibb/css-spinners@2.2.1/css/spinner/three-quarters.min.css">
+        <style>
+            body {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            header {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            form {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            input[type="text"] {
+                width: 100%;
+                max-width: 400px;
+                margin-bottom: 10px;
+                padding: 10px;
+                font-size: 16px;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+            main {
+                text-align: left;
+            }
+            .recommendation {
+                margin-bottom: 20px;
+            }
+            .recommendation h2 {
+                margin-bottom: 5px;
+            }
+            .recommendation p {
+                margin: 5px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <form id="name-form">
+                <h1>Book Recommender</h1>
+                <input type="text" name="query" placeholder="What type of book would you like to read?">
+                <button id="magic-button" type="submit">Recommend</button>
+            </form>
+        </header>
+        <div id="spinner" style="text-align: center; display: none">
+            <span class="three-quarters-loader" style="width: 100px; height: 100px; border-radius: 50%; border-width: 12px;"></span>
+        </div>
+        <main id="result" style="display: none">
+            <div class="recommendation">
+                <h2>Recommendation 1</h2>
+                <p id="recommendation1"></p>
+                <p id="authors1"></p>
+                <p id="summary1"></p>
+                <p id="rating1"></p>
+                <p id="link1"></p>
+            </div>
+            <div class="recommendation">
+                <h2>Recommendation 2</h2>
+                <p id="recommendation2"></p>
+                <p id="authors2"></p>
+                <p id="summary2"></p>
+                <p id="rating2"></p>
+                <p id="link2"></p>
+            </div>
+            <div class="recommendation">
+                <h2>Recommendation 3</h2>
+                <p id="recommendation3"></p>
+                <p id="authors3"></p>
+                <p id="summary3"></p>
+                <p id="rating3"></p>
+                <p id="link3"></p>
+            </div>
+        </main>
+
+        <script>
+            const form = document.getElementById("name-form");
+            const spinner = document.getElementById("spinner");
+            const result = document.getElementById("result");
+
+            form.addEventListener("submit", (ev) => {
+                ev.preventDefault();
+
+                result.style.display = "none";
+                spinner.style.display = "";
+
+                const formData = new FormData(form);
+
+                fetch("/process", {method: "POST", body: formData})
+                    .then(response => {
+                        if (response.ok) return response.json();
+                        throw new Error("POST request failed");
+                    })
+                    .then(data => {
+                        document.getElementById("recommendation1").textContent = data.recommendation1.title;
+                        document.getElementById("authors1").textContent = "Authors: " + (data.recommendation1.authors || []).join(", ");
+                        document.getElementById("summary1").textContent = "Summary: " + data.recommendation1.summary;
+                        document.getElementById("rating1").textContent = "Rating: " + data.recommendation1.rating;
+                        document.getElementById("link1").innerHTML = "Link: <a href='" + data.recommendation1.link + "'>" + data.recommendation1.link + "</a>";
+
+                        document.getElementById("recommendation2").textContent = data.recommendation2.title;
+                        document.getElementById("authors2").textContent = "Authors: " + (data.recommendation2.authors || []).join(", ");
+                        document.getElementById("summary2").textContent = "Summary: " + data.recommendation2.summary;
+                        document.getElementById("rating2").textContent = "Rating: " + data.recommendation2.rating;
+                        document.getElementById("link2").innerHTML = "Link: <a href='" + data.recommendation2.link + "'>" + data.recommendation2.link + "</a>";
+
+                        document.getElementById("recommendation3").textContent = data.recommendation3.title;
+                        document.getElementById("authors3").textContent = "Authors: " + (data.recommendation3.authors || []).join(", ");
+                        document.getElementById("summary3").textContent = "Summary: " + data.recommendation3.summary;
+                        document.getElementById("rating3").textContent = "Rating: " + data.recommendation3.rating;
+                        document.getElementById("link3").innerHTML = "Link: <a href='" + data.recommendation3.link + "'>" + data.recommendation3.link + "</a>";
+
+                        spinner.style.display = "none";
+                        result.style.display = "";
+                    })
+            });
+
+            function createHtmlList(element, items)
+            {
+                const ul = document.createElement("ul");
+
+                items.forEach(item => {
+                    const li = document.createElement("li");
+                    li.textContent = item;
+                    ul.appendChild(li);
+                })
+
+                element.innerHTML = "";
+                element.appendChild(ul);
+            }
+        </script>
+    </body>
+</html>
