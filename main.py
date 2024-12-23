@@ -10,10 +10,11 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini")
 
+
 def summarize_description(description):
     if not description:
         return "No description available."
-    
+
     prompt = """
     Summarize the following book description in 2-3 sentences:\n\n{description}"""
 
@@ -24,8 +25,9 @@ def summarize_description(description):
     llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini")
     chain = prompt_template | llm
     response = chain.invoke(input={"description": description})
-    
+
     return response
+
 
 def recommend_books(books):
     summary_template = """
@@ -45,7 +47,7 @@ def recommend_books(books):
     book_list = ""
     for book in books:
         book_list += f"Title: {book['title']}, Authors: {', '.join(book.get('authors', []))}, Description: {book.get('description', 'No description')}\n\n"
-    
+
     summary_prompt_template = PromptTemplate(
         input_variables=["booklist"],
         template=summary_template,
@@ -58,21 +60,24 @@ def recommend_books(books):
 
     return recommendations
 
+
 def search_and_recommend_books(query):
     print(f"Searching for books related to '{query}'...\n")
     books = search_books(query)
-    
+
     summarized_books = []
     for book in books:
         summary = summarize_description(book.get("description"))
-        summarized_books.append({
-            "title": book["title"],
-            "authors": book["authors"],
-            "summary": summary,
-            "rating": book.get("averageRating"),
-            "link": book["infoLink"]
-        })
-    
+        summarized_books.append(
+            {
+                "title": book["title"],
+                "authors": book["authors"],
+                "summary": summary,
+                "rating": book.get("averageRating"),
+                "link": book["infoLink"],
+            }
+        )
+
     # print("Summarized Results:")
     # for book in summarized_books:
     #     print(f"Title: {book['title']}")
@@ -80,7 +85,7 @@ def search_and_recommend_books(query):
     #     print(f"Summary: {book['summary']}")
     #     print(f"Rating: {book.get('rating', 'N/A')}")
     #     print(f"More Info: {book['link']}\n")
-    
+
     print("Generating recommendations...")
     recommendations = recommend_books(books)
     # print("Recommended Books:")
@@ -89,14 +94,12 @@ def search_and_recommend_books(query):
     # convert to dictionary
     recommendations = recommendations.to_dict()
     recommendations_dict = {}
-    for i, r in enumerate(recommendations['Recommendations']):
-        recommendations_dict["Recommendation"+str(i)] = r.to_dict()
+    for i, r in enumerate(recommendations["Recommendations"]):
+        recommendations_dict["Recommendation" + str(i)] = r.to_dict()
     return recommendations_dict
 
 
 if __name__ == "__main__":
-    query = 'work efficiency'
+    query = "work efficiency"
     out = search_and_recommend_books(query)
     print(out)
-    
-    

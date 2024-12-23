@@ -9,17 +9,22 @@ class BookRecommendation(BaseModel):
     authors: Optional[List[str]] = None
     rating: Optional[float] = None
     link: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
-        return {"title": self.title, 
-                "authors": self.authors,
-                "rating": self.rating,
-                "summary": self.summary,
-                "link": self.link,}
+        return {
+            "title": self.title,
+            "authors": self.authors,
+            "rating": self.rating,
+            "summary": self.summary,
+            "link": self.link,
+        }
+
 
 class Recommendations(BaseModel):
     recommendations: List[BookRecommendation]
+
     def to_dict(self) -> Dict[str, Any]:
         return {"Recommendations": self.recommendations}
+
 
 output_parser = PydanticOutputParser(pydantic_object=Recommendations)

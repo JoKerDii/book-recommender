@@ -19,9 +19,9 @@ def process():
     recommendations = search_and_recommend_books(query=query)
     return jsonify(
         {
-            "recommendation1": recommendations.get('Recommendation0', ''),
-            "recommendation2": recommendations.get('Recommendation1', ''),
-            "recommendation3": recommendations.get('Recommendation2', ''),
+            "recommendation1": recommendations.get("Recommendation0", ""),
+            "recommendation2": recommendations.get("Recommendation1", ""),
+            "recommendation3": recommendations.get("Recommendation2", ""),
         }
     )
 
